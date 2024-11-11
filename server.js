@@ -18,6 +18,10 @@ app.use("/parking", parkingSlotRouter);
 app.use("/book", bookingRouter);
 app.use("/payment", paymentRouter);
 
+app,get("/test",(req,res)=>{
+  res.send("Working!!")
+})
+
 app.get("/",(req,res)=>{
   res.send("Park Capsule")
 })
