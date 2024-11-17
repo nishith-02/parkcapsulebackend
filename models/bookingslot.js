@@ -6,9 +6,17 @@ const bookingSchema = mongoose.Schema(
       type: mongoose.Types.ObjectId,
       ref: "parkingModel",
     },
+    type:{
+      type:String,
+      enum:["Guest","User"]
+    },
     bookerId: {
       type: mongoose.Types.ObjectId,
       ref: "User",
+    },
+    guestId: {
+      type: mongoose.Types.ObjectId,
+      ref: "Guest",
     },
     ownerId: {
       type: mongoose.Types.ObjectId,

@@ -7,7 +7,7 @@ const {
   extendBookingTime,
 } = require("../controllers/bookSlot");
 
-router.post("/", auth, bookSlot);
+router.post("/", bookSlot);
 router.get("/", auth, getHistory);
 router.post("/extend", auth, extendBookingTime);
 

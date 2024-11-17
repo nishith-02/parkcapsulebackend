@@ -4,9 +4,17 @@ const paymentSchema=mongoose.Schema({
         type:mongoose.Types.ObjectId,
         ref:"Booking"
     },
+    type:{
+        type:String,
+        enum:["Guest","User"]
+    },
     userId:{
         type:mongoose.Types.ObjectId,
         ref:"User"
+    },
+    guestId:{
+        type:mongoose.Types.ObjectId,
+        ref:"Guest"
     },
     razarPayObjectStringfy: String,
     amount: String,

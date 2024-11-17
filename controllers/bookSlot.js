@@ -1,16 +1,21 @@
 const schedule = require("node-schedule");
 const parkingModel = require("../models/parkingslots");
 const bookingModel = require("../models/bookingslot");
+const Guest = require("../models/guest");
 
 const bookSlot = async (req, res) => {
   try {
-    const bookerId = req.user.id;
     const {
       parkingSlotId,
       noOfTwoWheelerBooked,
       noOfFourWheelerBooked,
       hoursBooked,
       extend,
+      typeOfUser,
+      name,
+      phoneNumber,
+      email,
+      userId
     } = req.body;
 
     const slot = await parkingModel.findById(parkingSlotId);
@@ -30,11 +35,36 @@ const bookSlot = async (req, res) => {
       },
       { new: true }
     );
-
-    const book = await bookingModel.create({
+    let book;
+    if(typeOfUser === "Guest"){
+      const guest = await Guest.create({
+        name,
+        phoneNumber,
+        email
+      })
+      let bookerId = guest._id
+      book = await bookingModel.create({
+        parkingSlotId,
+        place:slot.location,
+        bookerId,
+        type:"Guest",
+        ownerId: slot.createdBy,
+        totalAmount: slot.amount * hoursBooked,
+        noOfFourWheelerBooked,
+        noOfTwoWheelerBooked,
+        hoursBooked,
+        amountPerHour: slot.amount,
+        amountToBePaid: slot.amount * hoursBooked,
+        parkingSlotImage:slot.parkingImage,
+        created: Date.now() + hoursBooked * 60 * 60 * 1000,
+      });
+    }
+    else if(typeOfUser === "User"){
+    book = await bookingModel.create({
       parkingSlotId,
       place:slot.location,
-      bookerId,
+      bookerId:userId,
+      type:"User",
       ownerId: slot.createdBy,
       totalAmount: slot.amount * hoursBooked,
       noOfFourWheelerBooked,
@@ -45,6 +75,7 @@ const bookSlot = async (req, res) => {
       parkingSlotImage:slot.parkingImage,
       created: Date.now() + hoursBooked * 60 * 60 * 1000,
     });
+  }
 
     const startTime = new Date(Date.now() + hoursBooked * 60 * 60 * 1000);
     await schedule.scheduleJob(startTime, async () => {
